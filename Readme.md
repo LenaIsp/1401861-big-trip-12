@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Елена Исправникова](https://up.htmlacademy.ru/ecmascript/12/user/1401861).
-* Наставник: `Неизвестно`.
+* Наставник: [Даниил Царёв](https://up.htmlacademy.ru/javascript/20/user/945835).
 
 ---
 
