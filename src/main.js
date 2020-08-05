@@ -1,3 +1,5 @@
+'use strict';
+
 const ROUT_POINT_COUNT = 3;
 
 const createSiteRouteTemplate = () => {
