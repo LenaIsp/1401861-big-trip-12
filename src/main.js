@@ -6,8 +6,12 @@ import {createDayTemplate} from "./view/day.js";
 import {createRoutePointTemplate} from "./view/route-point.js";
 import {createOfferTemplate} from "./view/offer.js";
 import {createDestinationTemplate} from "./view/destination.js";
+import {generateRoutePoints} from "./mock/route-point.js";
 
-const ROUT_POINT_COUNT = 3;
+const ROUT_POINT_COUNT = 5;
+
+const points = new Array(ROUT_POINT_COUNT).fill().map(generateRoutePoints);
+console.log(points)
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -33,7 +37,7 @@ render(siteDaysContainerElement, createDayTemplate(), `beforeend`);
 const siteTripListElement = siteTripElement.querySelector(`.trip-events__list`);
 
 for (let i = 0; i < ROUT_POINT_COUNT; i++) {
-  render(siteTripListElement, createRoutePointTemplate(), `beforeend`);
+  render(siteTripListElement, createRoutePointTemplate(points[i]), `beforeend`);
 }
 
 render(siteDaysContainerElement, createOfferTemplate(), `beforebegin`);
