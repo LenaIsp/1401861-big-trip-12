@@ -3,12 +3,12 @@ import {createMenuTemplate} from "./view/menu.js";
 import {createFilterTemplate} from "./view/filter.js";
 import {createSortTemplate} from "./view/sort.js";
 import {createDayTemplate} from "./view/day.js";
-import {createRoutePointTemplate} from "./view/route-point.js";
-import {createOfferTemplate} from "./view/offer.js";
+import {createRoutePointTemplate} from "./view/point.js";
+import {createOfferTemplate} from "./view/point-edit.js";
 import {createDestinationTemplate} from "./view/destination.js";
-import {generateRoutePoints} from "./mock/route-point.js";
+import {generateRoutePoints} from "./mock/point.js";
 
-const ROUT_POINT_COUNT = 5;
+const ROUT_POINT_COUNT = 12;
 
 const points = new Array(ROUT_POINT_COUNT).fill().map(generateRoutePoints);
 console.log(points)
