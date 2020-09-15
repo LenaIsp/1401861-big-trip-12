@@ -1,6 +1,6 @@
-export const createRoutePointTemplate = (event) => {  
+export const createRoutePointTemplate = (event) => {
   const {type, city, date, price, offers} = event;
-  const texts = (type == `Check-in` || type == `Sightseeing` || type == `Restaurant`)
+  const texts = (type === `check-in` || type === `sightseeing` || type === `restaurant`)
     ? `in`
     : `to`;
 
@@ -8,7 +8,7 @@ export const createRoutePointTemplate = (event) => {
     if (times < 10) {
       return `0` + times;
     }
-    return times
+    return times;
   };
 
   const generateDateDuration = () => {
@@ -19,14 +19,15 @@ export const createRoutePointTemplate = (event) => {
 
     const formatDatePart = (value = 0, interval = `M`) => {
       if (value.toString().length > 1) {
-        return `${value}${interval}`
-      } if (value == 0) {
-        return ``
+        return `${value}${interval}`;
+      } if (value === 0) {
+        return ``;
       }
-      return `0${value}${interval}`
+      return `0${value}${interval}`;
     };
+
     const formatDateInterval = (days = 0, hours = 0, mins = 0) =>
-    `${formatDatePart(days, `D`)} ${formatDatePart(hours, `H`)} ${formatDatePart(mins, `M`)}`
+      `${formatDatePart(days, `D`)} ${formatDatePart(hours, `H`)} ${formatDatePart(mins, `M`)}`;
 
     const start = date.start;
     const end = date.end;
@@ -38,7 +39,7 @@ export const createRoutePointTemplate = (event) => {
     const hoursDiff = Math.trunc(delta / MS_IN_HOUR - daysDiff * 24);
     const minDiff = Math.trunc(delta / MS_IN_MIN - (daysDiff * 24 + hoursDiff) * 60);
 
-    return formatDateInterval(daysDiff, hoursDiff, minDiff)
+    return formatDateInterval(daysDiff, hoursDiff, minDiff);
   };
 
   return (
