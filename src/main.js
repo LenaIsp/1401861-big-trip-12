@@ -3,15 +3,38 @@ import MenuView from "./view/menu.js";
 import FilterView from "./view/filter.js";
 import SortView from "./view/sort.js";
 import DayView from "./view/day.js";
-import {createPointEditTemplate} from "./view/point-edit.js";
-import {createDestinationTemplate} from "./view/destination.js";
 import PointView from "./view/point.js";
+import PointEditView from "./view/point-edit.js";
 import {generateRoutePoints} from "./mock/point.js";
-import {renderTemplate, renderElement, RenderPosition} from "./utils.js";
+import {renderTemplate, render, RenderPosition} from "./utils.js";
 
 const ROUT_POINT_COUNT = 9;
 
 const points = new Array(ROUT_POINT_COUNT).fill().map(generateRoutePoints);
+
+const renderEvents = (element, point) => {
+  const pointComponent = new PointView(point);
+  const pointEditComponent = new PointEditView();
+
+  const replacePointToEdit = () => {
+    element.replaceChild(pointEditComponent.getElement(), pointComponent.getElement());
+  };
+
+  const replaceEditToPoint = () => {
+    element.replaceChild(pointComponent.getElement(), pointEditComponent.getElement(),);
+  };
+
+  pointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replacePointToEdit(element)
+  });
+
+  pointEditComponent.getElement().addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      replaceEditToPoint();
+  });
+
+  render(element, pointComponent.getElement(), RenderPosition.BEFOREEND);
+};
 
 const renderListEvents = (listEvents) => {
     const sorted = listEvents.slice().sort((event1, event2) => {
@@ -28,11 +51,11 @@ const renderListEvents = (listEvents) => {
       const eventDayDate = event.date.start.getDate();
       if (dayDate === eventDayDate) {
         const siteTripListElement = siteTripElement.querySelectorAll(`.trip-events__list`)[dayView-1];
-        renderElement(siteTripListElement, new PointView(event).getElement(), RenderPosition.BEFOREEND);
+        renderEvents(siteTripListElement, event)
       } else {
-        renderElement(siteDaysContainerElement, new DayView(event, dayCounter).getElement(), RenderPosition.BEFOREEND);
+        render(siteDaysContainerElement, new DayView(event, dayCounter).getElement(), RenderPosition.BEFOREEND);
         const siteTripListElement = siteTripElement.querySelectorAll(`.trip-events__list`)[dayView];
-        renderElement(siteTripListElement, new PointView(event).getElement(), RenderPosition.BEFOREEND);
+        renderEvents(siteTripListElement, event)
 
         dayCounter++;
         dayView++;
@@ -44,22 +67,20 @@ const renderListEvents = (listEvents) => {
 //Шапка
 const siteMainElement = document.querySelector(`.trip-main`);
 const siteControlsElement = siteMainElement.querySelector(`.trip-controls`);
-renderElement(siteMainElement, new SiteRouteView().getElement(), RenderPosition.AFTERBEGIN);
-renderElement(siteControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
-renderElement(siteControlsElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
+render(siteMainElement, new SiteRouteView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteControlsElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
 
 
 //Сортировка(event, time....)
 const siteTripElement = document.querySelector(`.trip-events`);
-renderElement(siteTripElement, new SortView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteTripElement, new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
 
 //Редактирование точки маршрута
 const siteDaysContainerElement = siteTripElement.querySelector(`.trip-days`);
-renderTemplate(siteDaysContainerElement, createPointEditTemplate(), `beforebegin`);
-const siteoffersElement = siteTripElement.querySelector(`.event__section--offers`);
-renderTemplate(siteoffersElement, createDestinationTemplate(), `afterend`);
+render(siteDaysContainerElement, new PointEditView().getElement(), RenderPosition.BEFOREEND);
 
 
-//Генерирует точки маршрута
+//очки маршрута
 renderListEvents(points)
