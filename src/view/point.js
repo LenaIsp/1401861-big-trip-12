@@ -1,4 +1,6 @@
-export const createRoutePointTemplate = (event) => {
+import {createElement} from "../utils.js";
+
+const createRoutePointTemplate = (event) => {
   const {type, city, date, price, offers} = event;
   const texts = (type === `check-in` || type === `sightseeing` || type === `restaurant`)
     ? `in`
@@ -79,3 +81,26 @@ export const createRoutePointTemplate = (event) => {
     </li>`
   );
 };
+
+export default class Point {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createRoutePointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

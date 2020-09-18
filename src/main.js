@@ -1,20 +1,39 @@
-import {createSiteRouteTemplate} from "./view/route.js";
-import {createMenuTemplate} from "./view/menu.js";
-import {createFilterTemplate} from "./view/filter.js";
-import {createSortTemplate} from "./view/sort.js";
-import {createDayTemplate} from "./view/day.js";
-import {createRoutePointTemplate} from "./view/point.js";
-import {createOfferTemplate} from "./view/point-edit.js";
-import {createDestinationTemplate} from "./view/destination.js";
+import SiteRouteView from "./view/site-route.js";
+import MenuView from "./view/menu.js";
+import FilterView from "./view/filter.js";
+import SortView from "./view/sort.js";
+import DayView from "./view/day.js";
+import PointView from "./view/point.js";
+import PointEditView from "./view/point-edit.js";
 import {generateRoutePoints} from "./mock/point.js";
+import {renderTemplate, render, RenderPosition} from "./utils.js";
 
-const ROUT_POINT_COUNT = 25;
+const ROUT_POINT_COUNT = 9;
 
 const points = new Array(ROUT_POINT_COUNT).fill().map(generateRoutePoints);
-console.log(points)
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
+const renderEvents = (element, point) => {
+  const pointComponent = new PointView(point);
+  const pointEditComponent = new PointEditView();
+
+  const replacePointToEdit = () => {
+    element.replaceChild(pointEditComponent.getElement(), pointComponent.getElement());
+  };
+
+  const replaceEditToPoint = () => {
+    element.replaceChild(pointComponent.getElement(), pointEditComponent.getElement(),);
+  };
+
+  pointComponent.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, () => {
+    replacePointToEdit(element)
+  });
+
+  pointEditComponent.getElement().addEventListener(`submit`, (evt) => {
+      evt.preventDefault();
+      replaceEditToPoint();
+  });
+
+  render(element, pointComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
 const renderListEvents = (listEvents) => {
@@ -23,7 +42,6 @@ const renderListEvents = (listEvents) => {
       if (event1.date.start.getDate() < event2.date.start.getDate()) return -1;
       return 0;
     });
-    console.log(sorted)
 
     let dayCounter = 1;
     let dayDate = null;
@@ -33,11 +51,11 @@ const renderListEvents = (listEvents) => {
       const eventDayDate = event.date.start.getDate();
       if (dayDate === eventDayDate) {
         const siteTripListElement = siteTripElement.querySelectorAll(`.trip-events__list`)[dayView-1];
-        render(siteTripListElement, createRoutePointTemplate(event), `beforeend`);
+        renderEvents(siteTripListElement, event)
       } else {
-        render(siteDaysContainerElement, createDayTemplate(event, dayCounter), `beforeend`);
+        render(siteDaysContainerElement, new DayView(event, dayCounter).getElement(), RenderPosition.BEFOREEND);
         const siteTripListElement = siteTripElement.querySelectorAll(`.trip-events__list`)[dayView];
-        render(siteTripListElement, createRoutePointTemplate(event), `beforeend`);
+        renderEvents(siteTripListElement, event)
 
         dayCounter++;
         dayView++;
@@ -46,24 +64,23 @@ const renderListEvents = (listEvents) => {
     }
 };
 
+//Шапка
 const siteMainElement = document.querySelector(`.trip-main`);
-const siteControlsHeaderElement = siteMainElement.querySelector(`.trip-controls > h2`);
 const siteControlsElement = siteMainElement.querySelector(`.trip-controls`);
+render(siteMainElement, new SiteRouteView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteControlsElement, new MenuView().getElement(), RenderPosition.AFTERBEGIN);
+render(siteControlsElement, new FilterView().getElement(), RenderPosition.BEFOREEND);
 
-render(siteMainElement, createSiteRouteTemplate(), `afterbegin`);
-render(siteControlsHeaderElement, createMenuTemplate(), `afterend`);
-render(siteControlsElement, createFilterTemplate(), `beforeend`);
 
+//Сортировка(event, time....)
 const siteTripElement = document.querySelector(`.trip-events`);
-const siteEventsHeaderElement = siteTripElement.querySelector(`h2`);
+render(siteTripElement, new SortView().getElement(), RenderPosition.AFTERBEGIN);
 
-render(siteEventsHeaderElement, createSortTemplate(), `afterend`);
 
+//Редактирование точки маршрута
 const siteDaysContainerElement = siteTripElement.querySelector(`.trip-days`);
-render(siteDaysContainerElement, createOfferTemplate(), `beforebegin`);
+render(siteDaysContainerElement, new PointEditView().getElement(), RenderPosition.BEFOREEND);
 
+
+//очки маршрута
 renderListEvents(points)
-
-const siteoffersElement = siteTripElement.querySelector(`.event__section--offers`);
-
-render(siteoffersElement, createDestinationTemplate(), `afterend`);
